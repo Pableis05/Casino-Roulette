@@ -89,7 +89,7 @@ public class RouletteController implements Initializable {
 
                     Platform.runLater(() -> {
 
-                        betCoins.add(new BetCoin(BetCoinType.TEN, BetCoinPosition.THIRTY));
+                        betCoins.add(new BetCoin(BetCoinType.TEN, BetCoinPosition.ZERO));
                         betCoins.add(new BetCoin(BetCoinType.TEN, BetCoinPosition.RED));
                         betCoins.add(new BetCoin(BetCoinType.TEN, BetCoinPosition.EVEN));
                         betCoins.add(new BetCoin(BetCoinType.TEN, BetCoinPosition.ONE_TO_EIGHTEEN));
@@ -128,24 +128,25 @@ public class RouletteController implements Initializable {
     }
 
     public void checkWinners(){
+        System.out.println(ballNumber + " " + even_odd + " " + ballColor + " " + dozen + " " + column + " " + half);
         for (BetCoin betCoin : betCoins) {
-            int betMoney = checkAmountMoneyOfBetCoin(betCoin);
-            //System.out.println(betMoney);
+            int individualBetChip = checkAmountMoneyOfBetCoin(betCoin);
             if (betCoin.getBetCoinPosition() == ballNumber) {
-                currentMoney += betMoney * 36;
+                currentMoney += individualBetChip * 36;
             } else if (!(ballNumber == BetCoinPosition.DOUBLE_ZERO || ballNumber == BetCoinPosition.ZERO)) {
                 if ((betCoin.getBetCoinPosition() == BetCoinPosition.RED && ballColor == BetCoinPosition.RED) || (betCoin.getBetCoinPosition() == BetCoinPosition.BLACK && ballColor == BetCoinPosition.BLACK)) {
-                    currentMoney += betMoney * 2;
+                    currentMoney += individualBetChip * 2;
                 } else if ((betCoin.getBetCoinPosition() == BetCoinPosition.EVEN && even_odd == BetCoinPosition.EVEN) || (betCoin.getBetCoinPosition() == BetCoinPosition.ODD && even_odd == BetCoinPosition.ODD)) {
-                    currentMoney += betMoney * 2;
+                    currentMoney += individualBetChip * 2;
                 } else if ((betCoin.getBetCoinPosition() == BetCoinPosition.ONE_TO_EIGHTEEN && half == BetCoinPosition.ONE_TO_EIGHTEEN) || (betCoin.getBetCoinPosition() == BetCoinPosition.NINETEEN_TO_THIRTY_SIX && half == BetCoinPosition.NINETEEN_TO_THIRTY_SIX)) {
-                    currentMoney += betMoney  * 2;
+                    currentMoney += individualBetChip  * 2;
                 } else if ((betCoin.getBetCoinPosition() == BetCoinPosition.FIRST_COLUMN && column == BetCoinPosition.FIRST_COLUMN) || (betCoin.getBetCoinPosition() == BetCoinPosition.SECOND_COLUMN && column == BetCoinPosition.SECOND_COLUMN) || (betCoin.getBetCoinPosition() == BetCoinPosition.THIRD_COLUMN && column == BetCoinPosition.THIRD_COLUMN)) {
-                    currentMoney += betMoney * 3;
+                    currentMoney += individualBetChip * 3;
                 } else if ((betCoin.getBetCoinPosition() == BetCoinPosition.FIRST_DOZEN && dozen == BetCoinPosition.FIRST_DOZEN) || (betCoin.getBetCoinPosition() == BetCoinPosition.SECOND_DOZEN && dozen == BetCoinPosition.SECOND_DOZEN) || (betCoin.getBetCoinPosition() == BetCoinPosition.THIRD_DOZEN && dozen == BetCoinPosition.THIRD_DOZEN)) {
-                    currentMoney += betMoney * 3;
+                    currentMoney += individualBetChip * 3;
                 }
             }
+            System.out.println(currentMoney);
         }
         betMoney = 0;
     }
