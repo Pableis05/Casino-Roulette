@@ -2,6 +2,6 @@ package com.example.roulette.model.enums;
 
 public enum BetCoinType {
 
-    ONE, FIVE, TEN, FIFTY
+    TEN, HUNDRED, THOUSAND, TEN_THOUSAND
 
 }
