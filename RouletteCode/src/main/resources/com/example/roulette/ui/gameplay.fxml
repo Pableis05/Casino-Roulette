@@ -16,10 +16,10 @@
            -fx-text-fill: white;
        </style>
    </Button>
-   <Label layoutX="414.0" layoutY="37.0" prefHeight="34.0" prefWidth="133.0" text="Current amount: $" textFill="WHITE" />
-   <Label layoutX="637.0" layoutY="37.0" prefHeight="34.0" prefWidth="133.0" text="Current bet: $" textFill="WHITE" />
-   <Label layoutX="414.0" layoutY="93.0" prefHeight="34.0" prefWidth="133.0" text="Last bet: $" textFill="#f5f5f5" />
-   <Label layoutX="637.0" layoutY="93.0" prefHeight="34.0" prefWidth="133.0" text="Profit: $" textFill="WHITE" />
-   <Label layoutX="522.0" layoutY="141.0" prefHeight="34.0" prefWidth="133.0" text="Balance: $" textFill="WHITE" />
+   <Label fx:id="currentAmount" layoutX="414.0" layoutY="37.0" prefHeight="34.0" prefWidth="133.0" text="Current amount: $" textFill="WHITE" />
+   <Label fx:id="currentBet" layoutX="637.0" layoutY="37.0" prefHeight="34.0" prefWidth="133.0" text="Current bet: $" textFill="WHITE" />
+   <Label fx:id="lastBet" layoutX="414.0" layoutY="93.0" prefHeight="34.0" prefWidth="133.0" text="Last bet: $" textFill="#f5f5f5" />
+   <Label fx:id="profit" layoutX="637.0" layoutY="93.0" prefHeight="34.0" prefWidth="133.0" text="Profit: $" textFill="WHITE" />
+   <Label fx:id="balance" layoutX="522.0" layoutY="141.0" prefHeight="34.0" prefWidth="133.0" text="Balance: $" textFill="WHITE" />
 
 </AnchorPane>

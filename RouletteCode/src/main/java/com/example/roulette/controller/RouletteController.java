@@ -13,6 +13,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 
@@ -30,6 +31,21 @@ public class RouletteController implements Initializable {
 
     @FXML
     private Button spinBTN;
+
+    @FXML
+    private Label currentAmount;
+
+    @FXML
+    private Label currentBet;
+
+    @FXML
+    private Label lastBet;
+
+    @FXML
+    private Label profit;
+
+    @FXML
+    private Label balance;
 
     private GraphicsContext gc;
 
@@ -60,6 +76,7 @@ public class RouletteController implements Initializable {
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
         drawImages();
         spinBTN.setOnAction((ActionEvent event) -> {
+            canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/list.png").toExternalForm())), 0, 260, 800, 100);
             RouletteSpin rouletteSpin = new RouletteSpin(canvas);
             rouletteSpin.start();
             try{
@@ -89,17 +106,10 @@ public class RouletteController implements Initializable {
 
                     Platform.runLater(() -> {
 
-                        betCoins.add(new BetCoin(BetCoinType.TEN, BetCoinPosition.ZERO));
-                        betCoins.add(new BetCoin(BetCoinType.TEN, BetCoinPosition.RED));
-                        betCoins.add(new BetCoin(BetCoinType.TEN, BetCoinPosition.EVEN));
-                        betCoins.add(new BetCoin(BetCoinType.TEN, BetCoinPosition.ONE_TO_EIGHTEEN));
-                        betCoins.add(new BetCoin(BetCoinType.TEN, BetCoinPosition.FIRST_COLUMN));
-                        betCoins.add(new BetCoin(BetCoinType.TEN, BetCoinPosition.FIRST_DOZEN));
+                        addBets();
                         betMoneyUpdate();
-                        System.out.println(currentMoney + " " + betMoney);
                         checkWinners();
-                        System.out.println(currentMoney + " " + betMoney);
-
+                        betCoins.clear();
                     });
 
                 } catch (InterruptedException e) {
@@ -107,6 +117,15 @@ public class RouletteController implements Initializable {
                 }
             }).start();
         });
+    }
+
+    public void addBets(){
+        betCoins.add(new BetCoin(BetCoinType.TEN, BetCoinPosition.ZERO));
+        betCoins.add(new BetCoin(BetCoinType.TEN, BetCoinPosition.RED));
+        betCoins.add(new BetCoin(BetCoinType.TEN, BetCoinPosition.EVEN));
+        betCoins.add(new BetCoin(BetCoinType.TEN, BetCoinPosition.ONE_TO_EIGHTEEN));
+        betCoins.add(new BetCoin(BetCoinType.TEN, BetCoinPosition.FIRST_COLUMN));
+        betCoins.add(new BetCoin(BetCoinType.TEN, BetCoinPosition.FIRST_DOZEN));
     }
 
     public void betMoneyUpdate() {
@@ -128,7 +147,6 @@ public class RouletteController implements Initializable {
     }
 
     public void checkWinners(){
-        System.out.println(ballNumber + " " + even_odd + " " + ballColor + " " + dozen + " " + column + " " + half);
         for (BetCoin betCoin : betCoins) {
             int individualBetChip = checkAmountMoneyOfBetCoin(betCoin);
             if (betCoin.getBetCoinPosition() == ballNumber) {
@@ -146,7 +164,6 @@ public class RouletteController implements Initializable {
                     currentMoney += individualBetChip * 3;
                 }
             }
-            System.out.println(currentMoney);
         }
         betMoney = 0;
     }
