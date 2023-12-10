@@ -1,18 +1,26 @@
 package com.example.roulette.controller;
 
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Label;
+import javafx.scene.layout.AnchorPane;
 
-public class RouletteController {
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class RouletteController implements Initializable {
+
     @FXML
-    private Label welcomeText;
+    private AnchorPane anchorPane;
 
     @FXML
     private Canvas canvas;
 
-    @FXML
-    protected void onHelloButtonClick() {
-        welcomeText.setText("Welcome to JavaFX Application!");
+    @Override
+    public void initialize(URL arg0, ResourceBundle arg1) {
+
+
     }
+
+
 }
