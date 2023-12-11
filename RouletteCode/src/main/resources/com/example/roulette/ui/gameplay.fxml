@@ -82,5 +82,7 @@
    <CheckBox fx:id="black" layoutX="404.0" layoutY="591.0" mnemonicParsing="false" opacity="0.0" prefHeight="49.0" prefWidth="105.0" />
    <CheckBox fx:id="nineteen" layoutX="632.0" layoutY="591.0" mnemonicParsing="false" opacity="0.0" prefHeight="49.0" prefWidth="84.0" />
 
+   <Button fx:id="startBTN" layoutX="450.0" layoutY="602.0" mnemonicParsing="false" prefHeight="126.0" prefWidth="307.0" style="&#10;" text="SPIN" textOverrun="CLIP"> </Button>
+
 
 </AnchorPane>

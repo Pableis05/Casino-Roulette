@@ -33,7 +33,7 @@ public class RouletteController implements Initializable {
     private Canvas canvas;
 
     @FXML
-    private Button spinBTN;
+    private Button spinBTN, startBTN;
 
     @FXML
     private Label currentAmount;
@@ -144,7 +144,10 @@ public class RouletteController implements Initializable {
         gc = canvas.getGraphicsContext2D();
         gc.setFill(javafx.scene.paint.Color.BLACK);
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        //canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/startView.png").toExternalForm())), 0, 0, 801, 730);
+        canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/startView.png").toExternalForm())), 0, 0, 801, 730);
+        startBTN.setOnAction(ActionEvent event) -> {
+
+        }
         drawImages();
         tenChip.setSelected(true);
 
