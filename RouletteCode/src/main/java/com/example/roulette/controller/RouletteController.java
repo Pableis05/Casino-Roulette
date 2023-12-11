@@ -13,13 +13,16 @@ import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 
 public class RouletteController implements Initializable {
 
@@ -55,18 +58,83 @@ public class RouletteController implements Initializable {
     private BetCoinPosition dozen;
     private BetCoinPosition column;
     private BetCoinPosition half;
-
     private ArrayList<BetCoin> betCoins;
-
     private int currentMoney;
-
     private int betMoney;
 
+    @FXML
+    private RadioButton tenChip, hundredChip, thousandChip, tenThousandChip;
+
+    @FXML
+    private CheckBox cb0,cb00, cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, cb9, cb10,
+            cb11, cb12, cb13, cb14, cb15, cb16, cb17, cb18, cb19, cb20,
+            cb21, cb22, cb23, cb24, cb25, cb26, cb27, cb28, cb29, cb30,
+            cb31, cb32, cb33, cb34, cb35, cb36, row1, row2, row3, dozen1, dozen2, dozen3, eighteen, even, red, black, odd, nineteen;
+
+    private ArrayList<CheckBox> checkBoxes;
 
     public RouletteController() {
         betCoins = new ArrayList<>();
         currentMoney = 10000;
         betMoney = 0;
+        tenChip = new RadioButton();
+        hundredChip = new RadioButton();
+        thousandChip = new RadioButton();
+        tenThousandChip = new RadioButton();
+        checkBoxes = new ArrayList<>();
+    }
+
+    public void addCheckBoxes(){
+        checkBoxes.add(cb0);
+        checkBoxes.add(cb00);
+        checkBoxes.add(cb1);
+        checkBoxes.add(cb2);
+        checkBoxes.add(cb3);
+        checkBoxes.add(cb4);
+        checkBoxes.add(cb5);
+        checkBoxes.add(cb6);
+        checkBoxes.add(cb7);
+        checkBoxes.add(cb8);
+        checkBoxes.add(cb9);
+        checkBoxes.add(cb10);
+        checkBoxes.add(cb11);
+        checkBoxes.add(cb12);
+        checkBoxes.add(cb13);
+        checkBoxes.add(cb14);
+        checkBoxes.add(cb15);
+        checkBoxes.add(cb16);
+        checkBoxes.add(cb17);
+        checkBoxes.add(cb18);
+        checkBoxes.add(cb19);
+        checkBoxes.add(cb20);
+        checkBoxes.add(cb21);
+        checkBoxes.add(cb22);
+        checkBoxes.add(cb23);
+        checkBoxes.add(cb24);
+        checkBoxes.add(cb25);
+        checkBoxes.add(cb26);
+        checkBoxes.add(cb27);
+        checkBoxes.add(cb28);
+        checkBoxes.add(cb29);
+        checkBoxes.add(cb30);
+        checkBoxes.add(cb31);
+        checkBoxes.add(cb32);
+        checkBoxes.add(cb33);
+        checkBoxes.add(cb34);
+        checkBoxes.add(cb35);
+        checkBoxes.add(cb36);
+        checkBoxes.add(row1);
+        checkBoxes.add(row2);
+        checkBoxes.add(row3);
+        checkBoxes.add(dozen1);
+        checkBoxes.add(dozen2);
+        checkBoxes.add(dozen3);
+        checkBoxes.add(eighteen);
+        checkBoxes.add(even);
+        checkBoxes.add(red);
+        checkBoxes.add(black);
+        checkBoxes.add(odd);
+        checkBoxes.add(nineteen);
     }
 
     @Override
@@ -75,8 +143,58 @@ public class RouletteController implements Initializable {
         gc.setFill(javafx.scene.paint.Color.BLACK);
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
         drawImages();
+        tenChip.setSelected(true);
+
+        new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(100);
+                    Platform.runLater(() -> {
+                        tenChip.setOnAction((ActionEvent event) -> {
+                            tenChip.setSelected(true);
+                            hundredChip.setSelected(false);
+                            thousandChip.setSelected(false);
+                            tenThousandChip.setSelected(false);
+                        });
+                        hundredChip.setOnAction((ActionEvent event) -> {
+                            tenChip.setSelected(false);
+                            hundredChip.setSelected(true);
+                            thousandChip.setSelected(false);
+                            tenThousandChip.setSelected(false);
+                        });
+                        thousandChip.setOnAction((ActionEvent event) -> {
+                            tenChip.setSelected(false);
+                            hundredChip.setSelected(false);
+                            thousandChip.setSelected(true);
+                            tenThousandChip.setSelected(false);
+                        });
+                        tenThousandChip.setOnAction((ActionEvent event) -> {
+                            tenChip.setSelected(false);
+                            hundredChip.setSelected(false);
+                            thousandChip.setSelected(false);
+                            tenThousandChip.setSelected(true);
+                        });
+                        addCheckBoxes();
+
+                        for (CheckBox checkBox : checkBoxes) {
+                            checkBoxAction(checkBox, getCurrentBetCoinType(), getBetCoinPositionCheckBox(checkBox));
+                        }
+
+                    });
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
         spinBTN.setOnAction((ActionEvent event) -> {
+
             canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/list.png").toExternalForm())), 0, 260, 800, 100);
+            tenChip.setDisable(true);
+            hundredChip.setDisable(true);
+            thousandChip.setDisable(true);
+            tenThousandChip.setDisable(true);
+
             RouletteSpin rouletteSpin = new RouletteSpin(canvas);
             rouletteSpin.start();
             try{
@@ -105,11 +223,20 @@ public class RouletteController implements Initializable {
                     ball.join();
 
                     Platform.runLater(() -> {
+                        tenChip.setDisable(false);
+                        hundredChip.setDisable(false);
+                        thousandChip.setDisable(false);
+                        tenThousandChip.setDisable(false);
 
-                        addBets();
                         betMoneyUpdate();
+                        System.out.println("betMoney: " + betMoney + " currentMoney: " + currentMoney);
                         checkWinners();
+                        System.out.println("betMoney: " + betMoney + " currentMoney: " + currentMoney);
                         betCoins.clear();
+                        for (CheckBox checkBox : checkBoxes) {
+                            if(checkBox.isSelected())
+                                checkBox.setSelected(false);
+                        }
                     });
 
                 } catch (InterruptedException e) {
@@ -119,13 +246,140 @@ public class RouletteController implements Initializable {
         });
     }
 
-    public void addBets(){
-        betCoins.add(new BetCoin(BetCoinType.TEN, BetCoinPosition.ZERO));
-        betCoins.add(new BetCoin(BetCoinType.TEN, BetCoinPosition.RED));
-        betCoins.add(new BetCoin(BetCoinType.TEN, BetCoinPosition.EVEN));
-        betCoins.add(new BetCoin(BetCoinType.TEN, BetCoinPosition.ONE_TO_EIGHTEEN));
-        betCoins.add(new BetCoin(BetCoinType.TEN, BetCoinPosition.FIRST_COLUMN));
-        betCoins.add(new BetCoin(BetCoinType.TEN, BetCoinPosition.FIRST_DOZEN));
+    public BetCoinPosition getBetCoinPositionCheckBox(CheckBox checkBox){
+        if(checkBox == cb0){
+            return BetCoinPosition.ZERO;
+        } else if(checkBox == cb00){
+            return BetCoinPosition.DOUBLE_ZERO;
+        } else if(checkBox == cb1){
+            return BetCoinPosition.ONE;
+        } else if(checkBox == cb2){
+            return BetCoinPosition.TWO;
+        } else if(checkBox == cb3){
+            return BetCoinPosition.THREE;
+        } else if(checkBox == cb4){
+            return BetCoinPosition.FOUR;
+        } else if(checkBox == cb5){
+            return BetCoinPosition.FIVE;
+        } else if(checkBox == cb6){
+            return BetCoinPosition.SIX;
+        } else if(checkBox == cb7){
+            return BetCoinPosition.SEVEN;
+        } else if(checkBox == cb8){
+            return BetCoinPosition.EIGHT;
+        } else if(checkBox == cb9){
+            return BetCoinPosition.NINE;
+        } else if(checkBox == cb10){
+            return BetCoinPosition.TEN;
+        } else if(checkBox == cb11){
+            return BetCoinPosition.ELEVEN;
+        } else if(checkBox == cb12){
+            return BetCoinPosition.TWELVE;
+        } else if(checkBox == cb13){
+            return BetCoinPosition.THIRTEEN;
+        } else if(checkBox == cb14){
+            return BetCoinPosition.FOURTEEN;
+        } else if(checkBox == cb15){
+            return BetCoinPosition.FIFTEEN;
+        } else if(checkBox == cb16){
+            return BetCoinPosition.SIXTEEN;
+        } else if(checkBox == cb17){
+            return BetCoinPosition.SEVENTEEN;
+        } else if(checkBox == cb18){
+            return BetCoinPosition.EIGHTEEN;
+        } else if(checkBox == cb19){
+            return BetCoinPosition.NINETEEN;
+        } else if(checkBox == cb20){
+            return BetCoinPosition.TWENTY;
+        } else if(checkBox == cb21){
+            return BetCoinPosition.TWENTY_ONE;
+        } else if(checkBox == cb22){
+            return BetCoinPosition.TWENTY_TWO;
+        } else if(checkBox == cb23){
+            return BetCoinPosition.TWENTY_THREE;
+        } else if(checkBox == cb24) {
+            return BetCoinPosition.TWENTY_FOUR;
+        } else if(checkBox == cb25){
+            return BetCoinPosition.TWENTY_FIVE;
+        } else if(checkBox == cb26){
+            return BetCoinPosition.TWENTY_SIX;
+        } else if(checkBox == cb27){
+            return BetCoinPosition.TWENTY_SEVEN;
+        } else if(checkBox == cb28){
+            return BetCoinPosition.TWENTY_EIGHT;
+        } else if(checkBox == cb29){
+            return BetCoinPosition.TWENTY_NINE;
+        } else if(checkBox == cb30){
+            return BetCoinPosition.THIRTY;
+        } else if(checkBox == cb31){
+            return BetCoinPosition.THIRTY_ONE;
+        } else if(checkBox == cb32){
+            return BetCoinPosition.THIRTY_TWO;
+        } else if(checkBox == cb33){
+            return BetCoinPosition.THIRTY_THREE;
+        } else if(checkBox == cb34){
+            return BetCoinPosition.THIRTY_FOUR;
+        } else if(checkBox == cb35){
+            return BetCoinPosition.THIRTY_FIVE;
+        } else if(checkBox == cb36){
+            return BetCoinPosition.THIRTY_SIX;
+        } else if(checkBox == row1){
+            return BetCoinPosition.FIRST_COLUMN;
+        } else if(checkBox == row2){
+            return BetCoinPosition.SECOND_COLUMN;
+        } else if(checkBox == row3){
+            return BetCoinPosition.THIRD_COLUMN;
+        } else if(checkBox == dozen1){
+            return BetCoinPosition.FIRST_DOZEN;
+        } else if(checkBox == dozen2){
+            return BetCoinPosition.SECOND_DOZEN;
+        } else if(checkBox == dozen3){
+            return BetCoinPosition.THIRD_DOZEN;
+        } else if(checkBox == eighteen){
+            return BetCoinPosition.ONE_TO_EIGHTEEN;
+        } else if(checkBox == even){
+            return BetCoinPosition.EVEN;
+        } else if(checkBox == red){
+            return BetCoinPosition.RED;
+        } else if(checkBox == black){
+            return BetCoinPosition.BLACK;
+        } else if(checkBox == odd){
+            return BetCoinPosition.ODD;
+        } else if(checkBox == nineteen){
+            return BetCoinPosition.NINETEEN_TO_THIRTY_SIX;
+        }
+        return null;
+    }
+
+    public BetCoinType getCurrentBetCoinType(){
+        if(tenChip.isSelected()){
+            return BetCoinType.TEN;
+        } else if(hundredChip.isSelected()){
+            return BetCoinType.HUNDRED;
+        } else if(thousandChip.isSelected()){
+            return BetCoinType.THOUSAND;
+        } else if(tenThousandChip.isSelected()){
+            return BetCoinType.TEN_THOUSAND;
+        }
+        return null;
+    }
+
+    public void checkBoxAction(CheckBox checkBox, BetCoinType betCoinType, BetCoinPosition betCoinPosition){
+        checkBox.setOnAction((ActionEvent event) -> {
+            if(checkBox.isSelected()){
+                addBet(betCoinType, betCoinPosition);
+            } else {
+                betCoins.removeIf(betCoin -> betCoin.getBetCoinPosition() == betCoinPosition);
+            }
+            for (BetCoin betCoin : betCoins) {
+                System.out.println(betCoin.getBetCoinPosition());
+            }
+        });
+    }
+
+    public void addBet(BetCoinType betCoinType, BetCoinPosition betCoinPosition){
+        System.out.println("addBet");
+        betCoins.add(new BetCoin(betCoinType, betCoinPosition));
     }
 
     public void betMoneyUpdate() {
