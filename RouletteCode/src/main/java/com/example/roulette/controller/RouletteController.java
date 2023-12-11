@@ -22,7 +22,7 @@ import javafx.scene.layout.AnchorPane;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
-import java.util.concurrent.atomic.AtomicReferenceArray;
+
 
 public class RouletteController implements Initializable {
 
@@ -188,12 +188,16 @@ public class RouletteController implements Initializable {
         }).start();
 
         spinBTN.setOnAction((ActionEvent event) -> {
+            spinBTN.setDisable(true);
 
             canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/list.png").toExternalForm())), 0, 260, 800, 100);
             tenChip.setDisable(true);
             hundredChip.setDisable(true);
             thousandChip.setDisable(true);
             tenThousandChip.setDisable(true);
+            for (CheckBox checkBox : checkBoxes) {
+                checkBox.setDisable(true);
+            }
 
             RouletteSpin rouletteSpin = new RouletteSpin(canvas);
             rouletteSpin.start();
@@ -223,10 +227,14 @@ public class RouletteController implements Initializable {
                     ball.join();
 
                     Platform.runLater(() -> {
+                        spinBTN.setDisable(false);
                         tenChip.setDisable(false);
                         hundredChip.setDisable(false);
                         thousandChip.setDisable(false);
                         tenThousandChip.setDisable(false);
+                        for (CheckBox checkBox : checkBoxes) {
+                            checkBox.setDisable(false);
+                        }
 
                         betMoneyUpdate();
                         System.out.println("betMoney: " + betMoney + " currentMoney: " + currentMoney);
@@ -368,17 +376,24 @@ public class RouletteController implements Initializable {
         checkBox.setOnAction((ActionEvent event) -> {
             if(checkBox.isSelected()){
                 addBet(betCoinType, betCoinPosition);
+                printBetCoins(betCoinType, betCoinPosition);
             } else {
                 betCoins.removeIf(betCoin -> betCoin.getBetCoinPosition() == betCoinPosition);
+                //removePaintBetCoin();
             }
+            System.out.println("-----------");
             for (BetCoin betCoin : betCoins) {
                 System.out.println(betCoin.getBetCoinPosition());
             }
         });
     }
 
+    public void printBetCoins(BetCoinType betCoinType, BetCoinPosition betCoinPosition){
+
+        canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/chip10.png").toExternalForm())), 80, 485 , 35, 35);
+    }
+
     public void addBet(BetCoinType betCoinType, BetCoinPosition betCoinPosition){
-        System.out.println("addBet");
         betCoins.add(new BetCoin(betCoinType, betCoinPosition));
     }
 
