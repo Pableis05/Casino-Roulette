@@ -23,7 +23,7 @@ public class Ball extends Thread{
     public Ball(Canvas canvas) {
         Random random = new Random();
         this.canvas = canvas;
-        ballNumber = random.nextInt(39);
+        ballNumber = random.nextInt(38);
     }
 
     @Override
@@ -162,12 +162,15 @@ public class Ball extends Thread{
                 ballPosition = BetCoinPosition.TWENTY_SEVEN;
                 break;
         }
+
         return ballPosition;
     }
 
     public BetCoinPosition getEven_odd() {
         if(ballPosition == BetCoinPosition.TWO || ballPosition == BetCoinPosition.FOUR || ballPosition == BetCoinPosition.SIX || ballPosition == BetCoinPosition.EIGHT || ballPosition == BetCoinPosition.TEN || ballPosition == BetCoinPosition.TWELVE || ballPosition == BetCoinPosition.FOURTEEN || ballPosition == BetCoinPosition.SIXTEEN || ballPosition == BetCoinPosition.EIGHTEEN || ballPosition == BetCoinPosition.TWENTY || ballPosition == BetCoinPosition.TWENTY_TWO || ballPosition == BetCoinPosition.TWENTY_FOUR || ballPosition == BetCoinPosition.TWENTY_SIX || ballPosition == BetCoinPosition.TWENTY_EIGHT || ballPosition == BetCoinPosition.THIRTY || ballPosition == BetCoinPosition.THIRTY_TWO || ballPosition == BetCoinPosition.THIRTY_FOUR || ballPosition == BetCoinPosition.THIRTY_SIX){
             even_odd = BetCoinPosition.EVEN;
+        } else if ( ballPosition == BetCoinPosition.ZERO || ballPosition == BetCoinPosition.DOUBLE_ZERO) {
+            even_odd = null;
         } else {
             even_odd = BetCoinPosition.ODD;
         }
@@ -177,6 +180,8 @@ public class Ball extends Thread{
     public BetCoinPosition getColor() {
         if(ballPosition == BetCoinPosition.ONE || ballPosition == BetCoinPosition.THREE || ballPosition == BetCoinPosition.FIVE || ballPosition == BetCoinPosition.SEVEN || ballPosition == BetCoinPosition.NINE || ballPosition == BetCoinPosition.TWELVE || ballPosition == BetCoinPosition.FOURTEEN || ballPosition == BetCoinPosition.SIXTEEN || ballPosition == BetCoinPosition.EIGHTEEN || ballPosition == BetCoinPosition.NINETEEN || ballPosition == BetCoinPosition.TWENTY_ONE || ballPosition == BetCoinPosition.TWENTY_THREE || ballPosition == BetCoinPosition.TWENTY_FIVE || ballPosition == BetCoinPosition.TWENTY_SEVEN || ballPosition == BetCoinPosition.THIRTY || ballPosition == BetCoinPosition.THIRTY_TWO || ballPosition == BetCoinPosition.THIRTY_FOUR || ballPosition == BetCoinPosition.THIRTY_SIX){
             color = BetCoinPosition.RED;
+        } else if ( ballPosition == BetCoinPosition.ZERO || ballPosition == BetCoinPosition.DOUBLE_ZERO) {
+            color = null;
         } else {
             color = BetCoinPosition.BLACK;
         }
@@ -188,6 +193,8 @@ public class Ball extends Thread{
             dozen = BetCoinPosition.FIRST_DOZEN;
         } else if(ballPosition == BetCoinPosition.THIRTEEN || ballPosition == BetCoinPosition.FOURTEEN || ballPosition == BetCoinPosition.FIFTEEN || ballPosition == BetCoinPosition.SIXTEEN || ballPosition == BetCoinPosition.SEVENTEEN || ballPosition == BetCoinPosition.EIGHTEEN || ballPosition == BetCoinPosition.NINETEEN || ballPosition == BetCoinPosition.TWENTY || ballPosition == BetCoinPosition.TWENTY_ONE || ballPosition == BetCoinPosition.TWENTY_TWO || ballPosition == BetCoinPosition.TWENTY_THREE || ballPosition == BetCoinPosition.TWENTY_FOUR){
             dozen = BetCoinPosition.SECOND_DOZEN;
+        } else if ( ballPosition == BetCoinPosition.ZERO || ballPosition == BetCoinPosition.DOUBLE_ZERO) {
+            dozen = null;
         } else {
             dozen = BetCoinPosition.THIRD_DOZEN;
         }
@@ -199,6 +206,8 @@ public class Ball extends Thread{
             column = BetCoinPosition.FIRST_COLUMN;
         } else if(ballPosition == BetCoinPosition.TWO || ballPosition == BetCoinPosition.FIVE || ballPosition == BetCoinPosition.EIGHT || ballPosition == BetCoinPosition.ELEVEN || ballPosition == BetCoinPosition.FOURTEEN || ballPosition == BetCoinPosition.SEVENTEEN || ballPosition == BetCoinPosition.TWENTY || ballPosition == BetCoinPosition.TWENTY_THREE || ballPosition == BetCoinPosition.TWENTY_SIX || ballPosition == BetCoinPosition.TWENTY_NINE || ballPosition == BetCoinPosition.THIRTY_TWO || ballPosition == BetCoinPosition.THIRTY_FIVE){
             column = BetCoinPosition.SECOND_COLUMN;
+        }else if ( ballPosition == BetCoinPosition.ZERO || ballPosition == BetCoinPosition.DOUBLE_ZERO) {
+            column = null;
         } else {
             column = BetCoinPosition.THIRD_COLUMN;
         }
@@ -208,6 +217,8 @@ public class Ball extends Thread{
     public BetCoinPosition getHalf() {
         if(ballPosition == BetCoinPosition.ONE || ballPosition == BetCoinPosition.TWO || ballPosition == BetCoinPosition.THREE || ballPosition == BetCoinPosition.FOUR || ballPosition == BetCoinPosition.FIVE || ballPosition == BetCoinPosition.SIX || ballPosition == BetCoinPosition.SEVEN || ballPosition == BetCoinPosition.EIGHT || ballPosition == BetCoinPosition.NINE || ballPosition == BetCoinPosition.TEN || ballPosition == BetCoinPosition.ELEVEN || ballPosition == BetCoinPosition.TWELVE || ballPosition == BetCoinPosition.THIRTEEN || ballPosition == BetCoinPosition.FOURTEEN || ballPosition == BetCoinPosition.FIFTEEN || ballPosition == BetCoinPosition.SIXTEEN || ballPosition == BetCoinPosition.SEVENTEEN || ballPosition == BetCoinPosition.EIGHTEEN){
             half = BetCoinPosition.ONE_TO_EIGHTEEN;
+        } else if ( ballPosition == BetCoinPosition.ZERO || ballPosition == BetCoinPosition.DOUBLE_ZERO) {
+            half = null;
         } else{
             half = BetCoinPosition.NINETEEN_TO_THIRTY_SIX;
         }

@@ -144,13 +144,14 @@ public class RouletteController implements Initializable {
         gc = canvas.getGraphicsContext2D();
         gc.setFill(javafx.scene.paint.Color.BLACK);
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        //canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/startView.png").toExternalForm())), 0, 0, 801, 730);
         drawImages();
         tenChip.setSelected(true);
 
         currentAmount.setText("Current Amount: $" + currentMoney);
         currentBet.setText("Current Bet: $" + 0);
         lastBet.setText("Last Bet: $" + lastBetMoney);
-        profit.setText("Profit bet: $" + 0);
+        profit.setText("Profit last bet: $" + 0);
         balance.setText("Total balance: $" + (currentMoney - 10000));
 
         new Thread(() -> {
@@ -183,7 +184,7 @@ public class RouletteController implements Initializable {
                             tenThousandChip.setSelected(true);
                         });
 
-                        profit.setText("Profit bet: $" + 0);
+
                         addCheckBoxes();
 
                         for (CheckBox checkBox : checkBoxes) {
@@ -220,7 +221,6 @@ public class RouletteController implements Initializable {
             }
             Ball ball = new Ball(canvas);
             ballNumber = ball.getBallNumber();
-            System.out.println(ballNumber + " ballNumber");
             even_odd = ball.getEven_odd();
             ballColor = ball.getColor();
             dozen = ball.getDozen();
@@ -238,7 +238,15 @@ public class RouletteController implements Initializable {
                     rouletteSpin.join();
                     ball.join();
                     try {
-                        Thread.sleep(7000);
+                        int[] position = obtainPositionBet(ballNumber);
+                        canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/star.png").toExternalForm())), position[0]-15, position[1]-15, 70, 70);
+                        for (CheckBox checkBox : checkBoxes) {
+                            if(checkBox.isSelected() && checkBox.getLayoutX() == position[0] && checkBox.getLayoutY() == position[1]){
+                                canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/circleStar.png").toExternalForm())), position[0]-15, position[1]-15, 70, 70);
+                            }
+                        }
+                        putStarsInWinnerSections();
+                        Thread.sleep(6000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -262,9 +270,9 @@ public class RouletteController implements Initializable {
                                 checkBox.setSelected(false);
                         }
 
-                        profit.setText("Profit bet: $" + (currentMoney - lastCurrentMoney));
+                        profit.setText("Profit last bet: $" + (currentMoney - lastCurrentMoney));
                         currentAmount.setText("Current Amount: $" + currentMoney);
-                        currentBet.setText("Current Bet: $" + 0);
+                        currentBet.setText("Current Bet: $" + betMoney);
                         lastBet.setText("Last Bet: $" + lastBetMoney);
                         balance.setText("Total balance: $" + (currentMoney - 10000));
                     });
@@ -274,6 +282,66 @@ public class RouletteController implements Initializable {
                 }
             }).start();
         });
+    }
+
+    public void putStarsInWinnerSections(){
+        if(ballColor == BetCoinPosition.RED && red.isSelected()){
+            int[] position = obtainPositionBet(BetCoinPosition.RED);
+            canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/circleStar.png").toExternalForm())), position[0]-5, position[1]-5, 45, 45);
+        }
+        if( ballColor == BetCoinPosition.BLACK && black.isSelected()){
+            int[] position = obtainPositionBet(BetCoinPosition.BLACK);
+            canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/circleStar.png").toExternalForm())), position[0]-5, position[1]-5, 45, 45);
+        }
+        if( even_odd == BetCoinPosition.EVEN && even.isSelected()){
+            int[] position = obtainPositionBet(BetCoinPosition.EVEN);
+            canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/circleStar.png").toExternalForm())), position[0]-5, position[1]-5, 45, 45);
+        }
+
+        if( even_odd == BetCoinPosition.ODD && odd.isSelected()){
+            int[] position = obtainPositionBet(BetCoinPosition.ODD);
+            canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/circleStar.png").toExternalForm())), position[0]-5, position[1]-5, 45, 45);
+        }
+
+        if( half == BetCoinPosition.ONE_TO_EIGHTEEN && eighteen.isSelected()){
+            int[] position = obtainPositionBet(BetCoinPosition.ONE_TO_EIGHTEEN);
+            canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/circleStar.png").toExternalForm())), position[0]-5, position[1]-5, 45, 45);
+        }
+        if( half == BetCoinPosition.NINETEEN_TO_THIRTY_SIX && nineteen.isSelected()){
+            int[] position = obtainPositionBet(BetCoinPosition.NINETEEN_TO_THIRTY_SIX);
+            canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/circleStar.png").toExternalForm())), position[0]-5, position[1]-5, 45, 45);
+        }
+
+        if( dozen == BetCoinPosition.FIRST_DOZEN && dozen1.isSelected()){
+            int[] position = obtainPositionBet(BetCoinPosition.FIRST_DOZEN);
+            canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/circleStar.png").toExternalForm())), position[0]-5, position[1]-5, 45, 45);
+        }
+
+        if( dozen == BetCoinPosition.SECOND_DOZEN && dozen2.isSelected()){
+            int[] position = obtainPositionBet(BetCoinPosition.SECOND_DOZEN);
+            canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/circleStar.png").toExternalForm())), position[0]-5, position[1]-5, 45, 45);
+        }
+
+        if( dozen == BetCoinPosition.THIRD_DOZEN && dozen3.isSelected()){
+            int[] position = obtainPositionBet(BetCoinPosition.THIRD_DOZEN);
+            canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/circleStar.png").toExternalForm())), position[0]-5, position[1]-5, 45, 45);
+        }
+
+        if( column == BetCoinPosition.FIRST_COLUMN && row1.isSelected()){
+            int[] position = obtainPositionBet(BetCoinPosition.FIRST_COLUMN);
+            canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/circleStar.png").toExternalForm())), position[0]-5, position[1]-5, 45, 45);
+        }
+
+        if( column == BetCoinPosition.SECOND_COLUMN && row2.isSelected()){
+            int[] position = obtainPositionBet(BetCoinPosition.SECOND_COLUMN);
+            canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/circleStar.png").toExternalForm())), position[0]-5, position[1]-5, 45, 45);
+        }
+
+        if( column == BetCoinPosition.THIRD_COLUMN && row3.isSelected()){
+            int[] position = obtainPositionBet(BetCoinPosition.THIRD_COLUMN);
+            canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/circleStar.png").toExternalForm())), position[0]-5, position[1]-5, 45, 45);
+        }
+
     }
 
     public BetCoinPosition getBetCoinPositionCheckBox(CheckBox checkBox){
@@ -397,8 +465,12 @@ public class RouletteController implements Initializable {
     public void checkBoxAction(CheckBox checkBox, BetCoinType betCoinType, BetCoinPosition betCoinPosition){
         checkBox.setOnAction((ActionEvent event) -> {
             if(checkBox.isSelected()){
-                addBet(betCoinType, betCoinPosition);
-                printBetCoins(betCoinType, betCoinPosition);
+                if(betCoinType == BetCoinType.TEN && currentMoney >= 10 || betCoinType == BetCoinType.HUNDRED && currentMoney >= 100 || betCoinType == BetCoinType.THOUSAND && currentMoney >= 1000 || betCoinType == BetCoinType.TEN_THOUSAND && currentMoney >= 10000) {
+                    addBet(betCoinType, betCoinPosition);
+                    printBetCoins(betCoinType, betCoinPosition);
+                } else {
+                    checkBox.setSelected(false);
+                }
             }else {
                 for (BetCoin betCoin : betCoins) {
                     if(betCoin.getBetCoinPosition() == betCoinPosition){
@@ -582,5 +654,7 @@ public class RouletteController implements Initializable {
         canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/chip1000.png").toExternalForm())), 380, 668, 50, 50);
         canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/chip10000.png").toExternalForm())), 500, 668, 50, 50);
     }
+
+
 
 }
