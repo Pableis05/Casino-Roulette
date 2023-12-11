@@ -389,8 +389,85 @@ public class RouletteController implements Initializable {
     }
 
     public void printBetCoins(BetCoinType betCoinType, BetCoinPosition betCoinPosition){
+        String betCoinTypeString = "";
+        int[] position = obtainPositionBet(betCoinPosition);
+        switch (betCoinType){
+            case TEN:
+                betCoinTypeString = "10";
+                break;
+            case HUNDRED:
+                betCoinTypeString = "100";
+                break;
+            case THOUSAND:
+                betCoinTypeString = "1000";
+                break;
+            case TEN_THOUSAND:
+                betCoinTypeString = "10000";
+                break;
+        }
+        canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/chip" + betCoinTypeString +".png").toExternalForm())), position[0], position[1] , 35, 35);
+    }
 
-        canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/chip10.png").toExternalForm())), 80, 485 , 35, 35);
+    public int[] obtainPositionBet(BetCoinPosition betCoinPosition){
+        switch (betCoinPosition){
+            //numbers
+            case ONE -> {return new int[]{80, 485}; }
+            case FOUR -> {return new int[]{136, 485}; }
+            case SEVEN -> {return new int[]{192, 485}; }
+            case TEN -> {return new int[]{247, 485}; }
+            case THIRTEEN -> {return new int[]{302, 485}; }
+            case SIXTEEN -> {return new int[]{357, 485}; }
+            case NINETEEN -> {return new int[]{412, 485}; }
+            case TWENTY_TWO -> {return new int[]{468, 485}; }
+            case TWENTY_FIVE -> {return new int[]{523, 485}; }
+            case TWENTY_EIGHT -> {return new int[]{580, 485}; }
+            case THIRTY_ONE -> {return new int[]{635, 485}; }
+            case THIRTY_FOUR -> {return new int[]{690, 485}; }
+            case FIRST_COLUMN -> {return new int[]{750, 485}; }
+
+            case TWO -> {return new int[]{80, 432}; }
+            case FIVE -> {return new int[]{136, 432}; }
+            case EIGHT -> {return new int[]{192, 432}; }
+            case ELEVEN -> {return new int[]{247, 432}; }
+            case FOURTEEN -> {return new int[]{302, 432}; }
+            case SEVENTEEN -> {return new int[]{357, 432}; }
+            case TWENTY -> {return new int[]{412, 432}; }
+            case TWENTY_THREE -> {return new int[]{468, 432}; }
+            case TWENTY_SIX -> {return new int[]{523, 432}; }
+            case TWENTY_NINE -> {return new int[]{580, 432}; }
+            case THIRTY_TWO -> {return new int[]{635, 432}; }
+            case THIRTY_FIVE -> {return new int[]{690, 432}; }
+            case SECOND_COLUMN -> {return new int[]{750, 432}; }
+
+            case THREE -> {return new int[]{80, 379}; }
+            case SIX -> {return new int[]{136, 379}; }
+            case NINE -> {return new int[]{192, 379}; }
+            case TWELVE -> {return new int[]{247, 379}; }
+            case FIFTEEN -> {return new int[]{302, 379}; }
+            case EIGHTEEN -> {return new int[]{357, 379}; }
+            case TWENTY_ONE -> {return new int[]{412, 379}; }
+            case TWENTY_FOUR -> {return new int[]{468, 379}; }
+            case TWENTY_SEVEN -> {return new int[]{523, 379}; }
+            case THIRTY -> {return new int[]{580, 379}; }
+            case THIRTY_THREE -> {return new int[]{635, 379}; }
+            case THIRTY_SIX -> {return new int[]{690, 379}; }
+            case THIRD_COLUMN -> {return new int[]{750, 379}; }
+
+            //sections
+            case ZERO -> {return new int[]{80, 526}; }
+            case DOUBLE_ZERO -> {return new int[]{136, 526}; }
+            case ONE_TO_EIGHTEEN -> {return new int[]{192, 526}; }
+            case NINETEEN_TO_THIRTY_SIX -> {return new int[]{247, 526}; }
+            case EVEN -> {return new int[]{302, 526}; }
+            case ODD -> {return new int[]{357, 526}; }
+            case RED -> {return new int[]{412, 526}; }
+            case BLACK -> {return new int[]{468, 526}; }
+            case FIRST_DOZEN -> {return new int[]{523, 526}; }
+            case SECOND_DOZEN -> {return new int[]{580, 526}; }
+            case THIRD_DOZEN -> {return new int[]{635, 526}; }
+
+        }
+        return null;
     }
 
     public void addBet(BetCoinType betCoinType, BetCoinPosition betCoinPosition){
