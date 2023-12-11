@@ -60,7 +60,7 @@ public class RouletteController implements Initializable {
     private BetCoinPosition half;
     private ArrayList<BetCoin> betCoins;
     private int currentMoney;
-    private int betMoney;
+    private int betMoney, lastBetMoney, lastCurrentMoney;
 
     @FXML
     private RadioButton tenChip, hundredChip, thousandChip, tenThousandChip;
@@ -77,11 +77,13 @@ public class RouletteController implements Initializable {
         betCoins = new ArrayList<>();
         currentMoney = 10000;
         betMoney = 0;
+        lastBetMoney = 0;
         tenChip = new RadioButton();
         hundredChip = new RadioButton();
         thousandChip = new RadioButton();
         tenThousandChip = new RadioButton();
         checkBoxes = new ArrayList<>();
+        lastCurrentMoney = 0;
     }
 
     public void addCheckBoxes(){
@@ -145,6 +147,12 @@ public class RouletteController implements Initializable {
         drawImages();
         tenChip.setSelected(true);
 
+        currentAmount.setText("Current Amount: $" + currentMoney);
+        currentBet.setText("Current Bet: $" + 0);
+        lastBet.setText("Last Bet: $" + lastBetMoney);
+        profit.setText("Profit bet: $" + 0);
+        balance.setText("Total balance: $" + (currentMoney - 10000));
+
         new Thread(() -> {
             while (true) {
                 try {
@@ -174,11 +182,16 @@ public class RouletteController implements Initializable {
                             thousandChip.setSelected(false);
                             tenThousandChip.setSelected(true);
                         });
+
+                        profit.setText("Profit bet: $" + 0);
                         addCheckBoxes();
 
                         for (CheckBox checkBox : checkBoxes) {
                             checkBoxAction(checkBox, getCurrentBetCoinType(), getBetCoinPositionCheckBox(checkBox));
                         }
+
+                        currentAmount.setText("Current Amount: $" + currentMoney);
+                        currentBet.setText("Current Bet: $" + betMoney);
 
                     });
                 } catch (InterruptedException e) {
@@ -189,7 +202,6 @@ public class RouletteController implements Initializable {
 
         spinBTN.setOnAction((ActionEvent event) -> {
             spinBTN.setDisable(true);
-
             canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/list.png").toExternalForm())), 0, 260, 800, 100);
             tenChip.setDisable(true);
             hundredChip.setDisable(true);
@@ -206,9 +218,9 @@ public class RouletteController implements Initializable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
             Ball ball = new Ball(canvas);
             ballNumber = ball.getBallNumber();
+            System.out.println(ballNumber + " ballNumber");
             even_odd = ball.getEven_odd();
             ballColor = ball.getColor();
             dozen = ball.getDozen();
@@ -225,7 +237,12 @@ public class RouletteController implements Initializable {
                 try {
                     rouletteSpin.join();
                     ball.join();
-
+                    try {
+                        Thread.sleep(7000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/board.png").toExternalForm())), 0, 360, 800, 300);
                     Platform.runLater(() -> {
                         spinBTN.setDisable(false);
                         tenChip.setDisable(false);
@@ -236,15 +253,20 @@ public class RouletteController implements Initializable {
                             checkBox.setDisable(false);
                         }
 
-                        betMoneyUpdate();
-                        System.out.println("betMoney: " + betMoney + " currentMoney: " + currentMoney);
+                        lastCurrentMoney = currentMoney + betMoney;
+
                         checkWinners();
-                        System.out.println("betMoney: " + betMoney + " currentMoney: " + currentMoney);
                         betCoins.clear();
                         for (CheckBox checkBox : checkBoxes) {
                             if(checkBox.isSelected())
                                 checkBox.setSelected(false);
                         }
+
+                        profit.setText("Profit bet: $" + (currentMoney - lastCurrentMoney));
+                        currentAmount.setText("Current Amount: $" + currentMoney);
+                        currentBet.setText("Current Bet: $" + 0);
+                        lastBet.setText("Last Bet: $" + lastBetMoney);
+                        balance.setText("Total balance: $" + (currentMoney - 10000));
                     });
 
                 } catch (InterruptedException e) {
@@ -377,15 +399,24 @@ public class RouletteController implements Initializable {
             if(checkBox.isSelected()){
                 addBet(betCoinType, betCoinPosition);
                 printBetCoins(betCoinType, betCoinPosition);
-            } else {
+            }else {
+                for (BetCoin betCoin : betCoins) {
+                    if(betCoin.getBetCoinPosition() == betCoinPosition){
+                        betMoneyDeleteUpdate(betCoin);
+                    }
+                }
                 betCoins.removeIf(betCoin -> betCoin.getBetCoinPosition() == betCoinPosition);
-                //removePaintBetCoin();
-            }
-            System.out.println("-----------");
-            for (BetCoin betCoin : betCoins) {
-                System.out.println(betCoin.getBetCoinPosition());
+                removePaintBetCoin();
             }
         });
+    }
+
+    public void removePaintBetCoin(){
+        canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/board.png").toExternalForm())), 0, 360, 800, 300);
+        for (BetCoin betCoin : betCoins) {
+            printBetCoins(betCoin.getBetCoinType(), betCoin.getBetCoinPosition());
+        }
+
     }
 
     public void printBetCoins(BetCoinType betCoinType, BetCoinPosition betCoinPosition){
@@ -410,11 +441,10 @@ public class RouletteController implements Initializable {
 
     public int[] obtainPositionBet(BetCoinPosition betCoinPosition){
         switch (betCoinPosition){
-            //numbers
             case ONE -> {return new int[]{80, 485}; }
             case FOUR -> {return new int[]{136, 485}; }
-            case SEVEN -> {return new int[]{192, 485}; }
-            case TEN -> {return new int[]{247, 485}; }
+            case SEVEN -> {return new int[]{191, 485}; }
+            case TEN -> {return new int[]{246, 485}; }
             case THIRTEEN -> {return new int[]{302, 485}; }
             case SIXTEEN -> {return new int[]{357, 485}; }
             case NINETEEN -> {return new int[]{412, 485}; }
@@ -427,8 +457,8 @@ public class RouletteController implements Initializable {
 
             case TWO -> {return new int[]{80, 432}; }
             case FIVE -> {return new int[]{136, 432}; }
-            case EIGHT -> {return new int[]{192, 432}; }
-            case ELEVEN -> {return new int[]{247, 432}; }
+            case EIGHT -> {return new int[]{191, 432}; }
+            case ELEVEN -> {return new int[]{246, 432}; }
             case FOURTEEN -> {return new int[]{302, 432}; }
             case SEVENTEEN -> {return new int[]{357, 432}; }
             case TWENTY -> {return new int[]{412, 432}; }
@@ -441,8 +471,8 @@ public class RouletteController implements Initializable {
 
             case THREE -> {return new int[]{80, 379}; }
             case SIX -> {return new int[]{136, 379}; }
-            case NINE -> {return new int[]{192, 379}; }
-            case TWELVE -> {return new int[]{247, 379}; }
+            case NINE -> {return new int[]{191, 379}; }
+            case TWELVE -> {return new int[]{246, 379}; }
             case FIFTEEN -> {return new int[]{302, 379}; }
             case EIGHTEEN -> {return new int[]{357, 379}; }
             case TWENTY_ONE -> {return new int[]{412, 379}; }
@@ -453,29 +483,29 @@ public class RouletteController implements Initializable {
             case THIRTY_SIX -> {return new int[]{690, 379}; }
             case THIRD_COLUMN -> {return new int[]{750, 379}; }
 
-            //sections
-            case ZERO -> {return new int[]{80, 526}; }
-            case DOUBLE_ZERO -> {return new int[]{136, 526}; }
-            case ONE_TO_EIGHTEEN -> {return new int[]{192, 526}; }
-            case NINETEEN_TO_THIRTY_SIX -> {return new int[]{247, 526}; }
-            case EVEN -> {return new int[]{302, 526}; }
-            case ODD -> {return new int[]{357, 526}; }
-            case RED -> {return new int[]{412, 526}; }
-            case BLACK -> {return new int[]{468, 526}; }
-            case FIRST_DOZEN -> {return new int[]{523, 526}; }
-            case SECOND_DOZEN -> {return new int[]{580, 526}; }
-            case THIRD_DOZEN -> {return new int[]{635, 526}; }
+            case ZERO -> {return new int[]{27, 475}; }
+            case DOUBLE_ZERO -> {return new int[]{27, 394}; }
+            case ONE_TO_EIGHTEEN -> {return new int[]{108, 595}; }
+            case NINETEEN_TO_THIRTY_SIX -> {return new int[]{670, 595}; }
+            case EVEN -> {return new int[]{220, 595}; }
+            case ODD -> {return new int[]{560, 595}; }
+            case RED -> {return new int[]{340, 595}; }
+            case BLACK -> {return new int[]{449, 595}; }
+            case FIRST_DOZEN -> {return new int[]{163, 542}; }
+            case SECOND_DOZEN -> {return new int[]{390, 542}; }
+            case THIRD_DOZEN -> {return new int[]{609, 542}; }
 
         }
         return null;
     }
 
     public void addBet(BetCoinType betCoinType, BetCoinPosition betCoinPosition){
-        betCoins.add(new BetCoin(betCoinType, betCoinPosition));
+        BetCoin betCoin = new BetCoin(betCoinType, betCoinPosition);
+        betCoins.add(betCoin);
+        betMoneyUpdate(betCoin);
     }
 
-    public void betMoneyUpdate() {
-        for (BetCoin betCoin : betCoins) {
+    public void betMoneyUpdate(BetCoin betCoin){
             if(betCoin.getBetCoinType() == BetCoinType.TEN){
                 betMoney += 10;
                 currentMoney -= 10;
@@ -489,6 +519,21 @@ public class RouletteController implements Initializable {
                 betMoney += 10000;
                 currentMoney -= 10000;
             }
+    }
+
+    public void betMoneyDeleteUpdate(BetCoin betCoin){
+        if(betCoin.getBetCoinType() == BetCoinType.TEN){
+            betMoney -= 10;
+            currentMoney += 10;
+        } else if(betCoin.getBetCoinType() == BetCoinType.HUNDRED){
+            betMoney -= 100;
+            currentMoney += 100;
+        } else if(betCoin.getBetCoinType() == BetCoinType.THOUSAND){
+            betMoney -= 1000;
+            currentMoney += 1000;
+        } else if(betCoin.getBetCoinType() == BetCoinType.TEN_THOUSAND){
+            betMoney -= 10000;
+            currentMoney += 10000;
         }
     }
 
@@ -511,6 +556,7 @@ public class RouletteController implements Initializable {
                 }
             }
         }
+        lastBetMoney = betMoney;
         betMoney = 0;
     }
 
