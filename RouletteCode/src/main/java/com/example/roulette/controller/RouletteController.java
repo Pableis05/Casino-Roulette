@@ -153,6 +153,7 @@ public class RouletteController implements Initializable {
         drawImages();
         tenChip.setSelected(true);
 
+
         currentAmount.setText("Current Amount: $" + currentMoney);
         currentBet.setText("Current Bet: $" + 0);
         lastBet.setText("Last Bet: $" + lastBetMoney);
@@ -257,12 +258,16 @@ public class RouletteController implements Initializable {
                             audioManager.stopMusic();
                             audioManager.setMusicPath("/win.wav");
                             audioManager.playMusic(0);
-                        }else {
+                        } else if (betCoins.isEmpty()) {
+                            audioManager.stopMusic();
+                            audioManager.setMusicPath("/zzz.wav");
+                            audioManager.playMusic(0);
+                        } else {
                             audioManager.stopMusic();
                             audioManager.setMusicPath("/gameOver.wav");
                             audioManager.playMusic(0);
                         }
-                        Thread.sleep(6000);
+                        Thread.sleep(5500);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -286,11 +291,29 @@ public class RouletteController implements Initializable {
                                 checkBox.setSelected(false);
                         }
                         winCondition = false;
+
                         profit.setText("Profit last bet: $" + (currentMoney - lastCurrentMoney));
                         currentAmount.setText("Current Amount: $" + currentMoney);
                         currentBet.setText("Current Bet: $" + betMoney);
                         lastBet.setText("Last Bet: $" + lastBetMoney);
                         balance.setText("Total balance: $" + (currentMoney - 10000));
+
+                        if(currentMoney - lastCurrentMoney > 0){
+                            profit.setTextFill(javafx.scene.paint.Color.GREEN);
+                        } else if (currentMoney - lastCurrentMoney < 0){
+                            profit.setTextFill(javafx.scene.paint.Color.RED);
+                        } else {
+                            profit.setTextFill(javafx.scene.paint.Color.WHITE);
+                        }
+
+                        if(currentMoney - 10000 > 0){
+                            balance.setTextFill(javafx.scene.paint.Color.GREEN);
+                        } else if (currentMoney - 10000 < 0){
+                            balance.setTextFill(javafx.scene.paint.Color.RED);
+                        } else {
+                            balance.setTextFill(javafx.scene.paint.Color.WHITE);
+                        }
+
                         if(currentMoney > 0){
                             audioManager.stopMusic();
                             audioManager.setMusicPath("/jazz.wav");

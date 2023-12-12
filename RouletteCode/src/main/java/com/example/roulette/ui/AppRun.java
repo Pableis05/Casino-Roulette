@@ -2,6 +2,7 @@ package com.example.roulette.ui;
 
 import com.example.roulette.controller.AudioManager;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -18,6 +19,11 @@ public class AppRun extends Application {
         stage.setTitle("Roulette Pableis");
         stage.getIcons().add(new Image(AppRun.class.getResource("sprites/icon.png").toExternalForm()));
         stage.setScene(scene);
+        stage.setOnCloseRequest(event -> {
+            Platform.exit();
+            System.exit(0);
+        });
+
         stage.show();
     }
 
