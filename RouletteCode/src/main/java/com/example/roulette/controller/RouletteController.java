@@ -33,7 +33,7 @@ public class RouletteController implements Initializable {
     private Canvas canvas;
 
     @FXML
-    private Button spinBTN, startBTN;
+    private Button spinBTN;
 
     @FXML
     private Label currentAmount;
@@ -61,6 +61,8 @@ public class RouletteController implements Initializable {
     private ArrayList<BetCoin> betCoins;
     private int currentMoney;
     private int betMoney, lastBetMoney, lastCurrentMoney;
+    private AudioManager audioManager;
+    boolean winCondition;
 
     @FXML
     private RadioButton tenChip, hundredChip, thousandChip, tenThousandChip;
@@ -84,6 +86,10 @@ public class RouletteController implements Initializable {
         tenThousandChip = new RadioButton();
         checkBoxes = new ArrayList<>();
         lastCurrentMoney = 0;
+        audioManager = AudioManager.getInstance();
+        audioManager.setMusicPath("/jazz.wav");
+        audioManager.playMusic(1000);
+        winCondition = false;
     }
 
     public void addCheckBoxes(){
@@ -144,10 +150,6 @@ public class RouletteController implements Initializable {
         gc = canvas.getGraphicsContext2D();
         gc.setFill(javafx.scene.paint.Color.BLACK);
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/startView.png").toExternalForm())), 0, 0, 801, 730);
-        startBTN.setOnAction(ActionEvent event) -> {
-
-        }
         drawImages();
         tenChip.setSelected(true);
 
@@ -187,7 +189,6 @@ public class RouletteController implements Initializable {
                             tenThousandChip.setSelected(true);
                         });
 
-
                         addCheckBoxes();
 
                         for (CheckBox checkBox : checkBoxes) {
@@ -205,6 +206,9 @@ public class RouletteController implements Initializable {
         }).start();
 
         spinBTN.setOnAction((ActionEvent event) -> {
+            audioManager.stopMusic();
+            audioManager.setMusicPath("/roulette.wav");
+            audioManager.playMusic(0);
             spinBTN.setDisable(true);
             canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/list.png").toExternalForm())), 0, 260, 800, 100);
             tenChip.setDisable(true);
@@ -243,12 +247,21 @@ public class RouletteController implements Initializable {
                     try {
                         int[] position = obtainPositionBet(ballNumber);
                         canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/star.png").toExternalForm())), position[0]-15, position[1]-15, 70, 70);
-                        for (CheckBox checkBox : checkBoxes) {
-                            if(checkBox.isSelected() && checkBox.getLayoutX() == position[0] && checkBox.getLayoutY() == position[1]){
-                                canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/circleStar.png").toExternalForm())), position[0]-15, position[1]-15, 70, 70);
+                        for (BetCoin betCoin : betCoins) {
+                            if(betCoin.getBetCoinPosition() == ballNumber){
+                                winCondition = true;
                             }
                         }
                         putStarsInWinnerSections();
+                        if(winCondition){
+                            audioManager.stopMusic();
+                            audioManager.setMusicPath("/win.wav");
+                            audioManager.playMusic(0);
+                        }else {
+                            audioManager.stopMusic();
+                            audioManager.setMusicPath("/gameOver.wav");
+                            audioManager.playMusic(0);
+                        }
                         Thread.sleep(6000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -272,12 +285,41 @@ public class RouletteController implements Initializable {
                             if(checkBox.isSelected())
                                 checkBox.setSelected(false);
                         }
-
+                        winCondition = false;
                         profit.setText("Profit last bet: $" + (currentMoney - lastCurrentMoney));
                         currentAmount.setText("Current Amount: $" + currentMoney);
                         currentBet.setText("Current Bet: $" + betMoney);
                         lastBet.setText("Last Bet: $" + lastBetMoney);
                         balance.setText("Total balance: $" + (currentMoney - 10000));
+                        if(currentMoney > 0){
+                            audioManager.stopMusic();
+                            audioManager.setMusicPath("/jazz.wav");
+                            audioManager.playMusic(1000);
+                        }else{
+                            profit.setText("");
+                            currentAmount.setText("");
+                            currentBet.setText("");
+                            lastBet.setText("");
+                            balance.setText("");
+                            spinBTN.setVisible(false);
+                            canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/endSprite.png").toExternalForm())), 0, 0, 801, 730);
+
+                            audioManager.stopMusic();
+                            audioManager.setMusicPath("/outro.wav");
+                            audioManager.playMusic(0);
+
+                            long sleepTime = 5000;
+                            Platform.runLater(() -> {
+                                try {
+                                    Thread.sleep(sleepTime);
+                                    Platform.exit();
+                                } catch (InterruptedException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            });
+
+                        }
+
                     });
 
                 } catch (InterruptedException e) {
@@ -289,58 +331,70 @@ public class RouletteController implements Initializable {
 
     public void putStarsInWinnerSections(){
         if(ballColor == BetCoinPosition.RED && red.isSelected()){
+            winCondition = true;
             int[] position = obtainPositionBet(BetCoinPosition.RED);
             canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/circleStar.png").toExternalForm())), position[0]-5, position[1]-5, 45, 45);
         }
         if( ballColor == BetCoinPosition.BLACK && black.isSelected()){
+            winCondition = true;
             int[] position = obtainPositionBet(BetCoinPosition.BLACK);
             canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/circleStar.png").toExternalForm())), position[0]-5, position[1]-5, 45, 45);
         }
         if( even_odd == BetCoinPosition.EVEN && even.isSelected()){
+            winCondition = true;
             int[] position = obtainPositionBet(BetCoinPosition.EVEN);
             canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/circleStar.png").toExternalForm())), position[0]-5, position[1]-5, 45, 45);
         }
 
         if( even_odd == BetCoinPosition.ODD && odd.isSelected()){
+            winCondition = true;
             int[] position = obtainPositionBet(BetCoinPosition.ODD);
             canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/circleStar.png").toExternalForm())), position[0]-5, position[1]-5, 45, 45);
         }
 
         if( half == BetCoinPosition.ONE_TO_EIGHTEEN && eighteen.isSelected()){
+            winCondition = true;
             int[] position = obtainPositionBet(BetCoinPosition.ONE_TO_EIGHTEEN);
             canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/circleStar.png").toExternalForm())), position[0]-5, position[1]-5, 45, 45);
         }
         if( half == BetCoinPosition.NINETEEN_TO_THIRTY_SIX && nineteen.isSelected()){
+            winCondition = true;
             int[] position = obtainPositionBet(BetCoinPosition.NINETEEN_TO_THIRTY_SIX);
             canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/circleStar.png").toExternalForm())), position[0]-5, position[1]-5, 45, 45);
         }
 
         if( dozen == BetCoinPosition.FIRST_DOZEN && dozen1.isSelected()){
+            winCondition = true;
             int[] position = obtainPositionBet(BetCoinPosition.FIRST_DOZEN);
             canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/circleStar.png").toExternalForm())), position[0]-5, position[1]-5, 45, 45);
         }
 
         if( dozen == BetCoinPosition.SECOND_DOZEN && dozen2.isSelected()){
+            winCondition = true;
             int[] position = obtainPositionBet(BetCoinPosition.SECOND_DOZEN);
             canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/circleStar.png").toExternalForm())), position[0]-5, position[1]-5, 45, 45);
         }
 
         if( dozen == BetCoinPosition.THIRD_DOZEN && dozen3.isSelected()){
+            winCondition = true;
             int[] position = obtainPositionBet(BetCoinPosition.THIRD_DOZEN);
             canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/circleStar.png").toExternalForm())), position[0]-5, position[1]-5, 45, 45);
         }
 
         if( column == BetCoinPosition.FIRST_COLUMN && row1.isSelected()){
+            winCondition = true;
             int[] position = obtainPositionBet(BetCoinPosition.FIRST_COLUMN);
             canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/circleStar.png").toExternalForm())), position[0]-5, position[1]-5, 45, 45);
         }
 
         if( column == BetCoinPosition.SECOND_COLUMN && row2.isSelected()){
+            winCondition = true;
             int[] position = obtainPositionBet(BetCoinPosition.SECOND_COLUMN);
             canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/circleStar.png").toExternalForm())), position[0]-5, position[1]-5, 45, 45);
         }
 
         if( column == BetCoinPosition.THIRD_COLUMN && row3.isSelected()){
+            winCondition = true;
             int[] position = obtainPositionBet(BetCoinPosition.THIRD_COLUMN);
             canvas.getGraphicsContext2D().drawImage(new Image((AppRun.class.getResource("sprites/circleStar.png").toExternalForm())), position[0]-5, position[1]-5, 45, 45);
         }
