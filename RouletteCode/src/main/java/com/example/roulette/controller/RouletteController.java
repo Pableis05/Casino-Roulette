@@ -336,6 +336,7 @@ public class RouletteController implements Initializable {
                                 try {
                                     Thread.sleep(sleepTime);
                                     Platform.exit();
+                                    System.exit(0);
                                 } catch (InterruptedException e) {
                                     throw new RuntimeException(e);
                                 }
