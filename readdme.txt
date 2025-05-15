@@ -1,0 +1,177 @@
+#1
+
+package co.icesi.taskManager.config;
+
+import co.icesi.taskManager.utils.JwtFilter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+@Configuration
+@EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
+public class AppConfig {
+
+    @Autowired
+    private JwtFilter jwtFilter;
+
+    @Bean
+    BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .cors(t -> t.disable())
+            .csrf(c -> c.disable())
+            .authorizeHttpRequests(requests -> requests
+                    .requestMatchers("/login").permitAll()
+                    .anyRequest().authenticated())
+            .sessionManagement(t -> t.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .headers(headers -> headers.frameOptions(frame -> frame.disable()));
+
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
+}
+
+
+#2
+
+package co.icesi.taskManager.controllers; 
+
+import co.icesi.taskManager.controllers.api.TaskController;
+import co.icesi.taskManager.dtos.TaskDto;
+import co.icesi.taskManager.mappers.TaskMapper;
+import co.icesi.taskManager.model.Task;
+import co.icesi.taskManager.model.User;
+import co.icesi.taskManager.repositories.UserRepository;
+import co.icesi.taskManager.services.interfaces.TaskService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/tasks")
+public class TaskControllerImpl implements TaskController {
+
+    @Autowired
+    private TaskService taskService;
+
+    @Autowired
+    private TaskMapper taskMapper;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Override
+    @GetMapping
+    @PreAuthorize("hasAuthority('VIEW_TASK')")
+    public ResponseEntity<?> findAllTask() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username);
+        List<TaskDto> tasks = user.getTasks().stream().map(taskMapper::taskToTaskDto).toList();
+        return ResponseEntity.ok(tasks);
+    }
+
+    @Override
+    @PostMapping
+    @PreAuthorize("hasAuthority('CREATE_TASK')")
+    public ResponseEntity<?> addTask(@RequestBody TaskDto dto) {
+        Task task = taskMapper.taskDtoToTask(dto);
+        Task saved = taskService.createTask(task);
+        return ResponseEntity.status(HttpStatus.CREATED).body(taskMapper.taskToTaskDto(saved));
+    }
+
+    @Override
+    @PutMapping
+    @PreAuthorize("hasAuthority('UPDATE_TASK')")
+    public ResponseEntity<?> updateTask(@RequestBody TaskDto dto) {
+        Task task = taskMapper.taskDtoToTask(dto);
+        Task updated = taskService.updateTask(task);
+        return ResponseEntity.ok(taskMapper.taskToTaskDto(updated));
+    }
+
+    @Override
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('DELETE_TASK')")
+    public ResponseEntity<?> deleteTask(@PathVariable long id) {
+        taskService.deleteTask(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('VIEW_TASK')")
+    public ResponseEntity<?> findById(@PathVariable long id) {
+        Task task = taskService.getTaskById(id);
+        if (task == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(taskMapper.taskToTaskDto(task));
+    }
+}
+
+#3
+
+package co.icesi.taskManager.services.impl;
+
+import co.icesi.taskManager.model.Task;
+import co.icesi.taskManager.repositories.TaskRepository;
+import co.icesi.taskManager.services.interfaces.TaskService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class TaskServiceImpl implements TaskService {
+
+    @Autowired
+    private TaskRepository taskRepository;
+
+    @Override
+    public Task createTask(Task task) {
+        return taskRepository.save(task);
+    }
+
+    @Override
+    public Task updateTask(Task task) {
+        return taskRepository.save(task);
+    }
+
+    @Override
+    public void deleteTask(long taskId) {
+        taskRepository.deleteById(taskId);
+    }
+
+    @Override
+    public void assignTask(long taskId, long userId) {
+    }
+
+    @Override
+    public void unassignTask(long taskId, long userId) {
+    }
+
+    @Override
+    public Task getTaskById(long taskId) {
+        return taskRepository.findById(taskId).orElse(null);
+    }
+
+    @Override
+    public List<Task> getAllTask() {
+        return taskRepository.findAll();
+    }
+}
